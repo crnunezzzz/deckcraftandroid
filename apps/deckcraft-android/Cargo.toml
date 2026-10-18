@@ -1,0 +1,25 @@
+[package]
+name = "deckcraft-android"
+version.workspace = true
+edition.workspace = true
+license.workspace = true
+description = "Native Android tablet host for DeckCraft"
+
+[lib]
+crate-type = ["cdylib", "rlib"]
+
+[dependencies]
+serde = { workspace = true }
+serde_json = { workspace = true }
+
+[target.'cfg(target_os = "android")'.dependencies]
+egui = { workspace = true }
+eframe = { workspace = true, features = ["wgpu", "android-game-activity", "default_fonts"] }
+android-activity = { version = "0.6.1", features = ["game-activity"] }
+jni = "0.22.4"
+zeroize = { version = "1", features = ["derive"] }
+deckcraft-engine = { workspace = true }
+deckcraft-ui-egui = { workspace = true }
+deckcraft-media = { workspace = true }
+cpal = "0.16"
+log = { workspace = true }

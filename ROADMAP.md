@@ -1,6 +1,6 @@
 # DeckCraft roadmap
 
-> Android update · 2026-10-18: Android.4 adds explicit IME/hardware-key input, the original launcher icon, and a native Asistente tab with in-panel API settings. Device validation remains pending; see [Android notes](docs/android.md).
+> Android update · 2026-10-19: Android.6 fixes the system bars covering the app, recognises touch, mouse, stylus and touchpad gestures natively (scrolling, no accidental zoom), and rebuilds the assistant after PDF Scholar's with OpenAI (Responses API) and Anthropic only. Device validation remains pending; see [Android notes](docs/android.md).
 
 **Stage: alpha** · next: beta, ~20 points and ~120–210 h away
 
@@ -295,6 +295,10 @@ app's JSON control channel (`deckcraft --control PORT`).
 | 2026-10-10 | minor | Stage checked against the new core-workflow gate: passes, stays alpha |
 | 2026-10-10 | major | Restructured to craftrules `standards/progress-docs.md`: stage, two numbers, dimensions, features, languages; parity estimate moved to docs/target-app-parity.md, "Working today" to its evidence section, the alpha checklist to docs/roadmap.md |
 | 2026-10-07 | major | Alpha checklist (~80% to a self-defined alpha), breadth ~80%, overall ~62%, ~190 h to full parity |
+
+### 2026-10-19 — Android.6: native window, gestures and assistant
+
+Edge-to-edge window with system-bar, cutout and keyboard insets; Back no longer finishes the activity; pointer input recognised in the host (finger pan with momentum, tap, long press, pinch; mouse, stylus and touchpad as precise pointers), which removes the accidental multi-touch zoom; assistant panel redesigned after PDF Scholar's, OpenAI Responses and Anthropic Messages with native append-only histories and the current model lineup. Details and validation: [docs/android.md](docs/android.md).
 
 ### 2026-10-18 — Android host (initial integration)
 

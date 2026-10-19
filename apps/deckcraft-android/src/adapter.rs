@@ -16,6 +16,8 @@ pub struct Editor {
 }
 impl Editor {
     pub const NAME: &'static str = "DeckCraft";
+    /// The editor has no momentum of its own: the host coasts after a flick.
+    pub const OWN_MOMENTUM: bool = false;
     pub fn new(dir: &Path, platform: Platform, _ctx: &Context) -> Self {
         let open = platform.clone();
         let save = platform.clone();
@@ -99,9 +101,6 @@ impl Editor {
     }
     pub fn context(&mut self) -> Value {
         self.app.session.execute("document.inspect", &json!({})).unwrap_or_else(|e| json!({"error":e.to_string()}))
-    }
-    pub fn stamp(&self) -> String {
-        self.app.session.active().map(|d| format!("{}:{}:{:?}", d.uid, d.revision, d.selection)).unwrap_or_default()
     }
     pub fn file_event(&mut self, event: &Value) {
         if event["external"] == true

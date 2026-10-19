@@ -921,6 +921,7 @@ dependencies = [
  "deckcraft-ui-egui",
  "eframe",
  "egui",
+ "egui_kittest",
  "jni 0.22.4",
  "log",
  "serde",

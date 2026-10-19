@@ -15,6 +15,7 @@ pub mod dialogs;
 pub mod doc_window;
 pub mod eyedropper;
 pub mod fillui;
+pub mod host_toolbar;
 pub mod icons;
 pub mod media;
 pub mod menus;
@@ -200,6 +201,8 @@ const STATUS_LINGER_MS: f64 = 6000.0;
 /// Platform services injected by the host (desktop or web).
 #[derive(Default)]
 pub struct Services {
+    /// Optional platform commands in the editor command bar.
+    pub host_toolbar: Option<host_toolbar::HostToolbar>,
     /// Open-file dialog for a purpose (`open`, `picture`, `audio`, `video`) → path.
     pub pick_open: Option<PickFn>,
     /// Save dialog with a suggested name → path.
@@ -1612,6 +1615,20 @@ impl SlideApp {
                 self.session.compose_text(text, active_range_chars.as_ref().map(|r| (r.start, r.end)))
             }
             egui::ImeEvent::Commit(text) => self.session.commit_text(text),
+            egui::ImeEvent::DeleteSurrounding { before_chars, after_chars } => {
+                // Android keyboards may delete through InputConnection without a key event.
+                if self.session.active().is_some_and(|d| d.selection.text.is_some()) {
+                    for (key, count) in [("Backspace", *before_chars), ("Delete", *after_chars)] {
+                        for _ in 0..count.min(8192) {
+                            if let Err(error) = self.session.key(key, Mods::default()) {
+                                self.set_status(error.to_string());
+                                return;
+                            }
+                        }
+                    }
+                }
+                Ok(Value::Null)
+            }
             #[allow(deprecated)]
             egui::ImeEvent::Disabled => {
                 self.session.end_composition();

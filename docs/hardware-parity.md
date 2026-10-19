@@ -1,5 +1,7 @@
 # Hardware parity with PowerPoint
 
+> Android update · 2026-10-18: Android.4 adds explicit IME/hardware-key input, the original launcher icon, and a native Asistente tab with in-panel API settings. Device validation remains pending; see [Android notes](android.md).
+
 > **Last reviewed:** 2026-10-14 · **Last updated:** 2026-10-18 · **Change:** minor (community PR wave 2026-10-14: picture export DPI, Retina pixel grid (#184), twist to rotate, swipe to turn the page, pen pressure; duplicated rows and headers folded; previous: minor, IME input, #101) · **Target:** Microsoft PowerPoint for Mac 16.113 (Microsoft 365); PowerPoint for Windows where noted
 
 What hardware PowerPoint uses and what DeckCraft uses, per platform. Dimension score: **~40%

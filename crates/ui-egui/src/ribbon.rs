@@ -181,13 +181,18 @@ pub fn show(app: &mut SlideApp, ui: &mut Ui) {
             }
             x += w + 2.0;
         }
-        let all: Vec<(&str, bool)> = TABS.iter().map(|s| (*s, false)).chain(ctx_tabs.iter().map(|s| (*s, true))).collect();
+        let mut all: Vec<(&str, bool)> = TABS.iter().map(|s| (*s, false)).collect();
+        if app.services.host_toolbar.is_some() {
+            all.extend([("Ayuda", false), ("Asistente", false)]);
+        }
+        all.extend(ctx_tabs.iter().map(|s| (*s, true)));
         for (name, contextual) in all {
             let font = theme::font(13.0);
             let w = ui.fonts_mut(|f| f.layout_no_wrap(name.to_string(), font.clone(), t.text).size().x) + 18.0;
             let r = Rect::from_min_size(pos2(x, y), vec2(w, 24.0));
             let resp = ui.interact(r, ui.id().with(("tab", name)), Sense::click());
-            let active = app.ui.tab == name;
+            let active = if name == "Asistente" { app.services.host_toolbar.as_ref().is_some_and(|h| h.assistant_open) } else { app.ui.tab == name };
+            resp.widget_info(|| egui::WidgetInfo::selected(egui::WidgetType::SelectableLabel, true, active, name));
             if resp.hovered() && !active {
                 ui.painter().rect_filled(r.shrink2(vec2(2.0, 2.0)), CornerRadius::same(4), t.hover);
             }
@@ -199,7 +204,13 @@ pub fn show(app: &mut SlideApp, ui: &mut Ui) {
                 ui.painter().rect_filled(Rect::from_center_size(pos2(r.center().x, r.max.y - 1.0), vec2(uw, 3.0)), CornerRadius::same(1), t.accent);
             }
             if resp.clicked() {
-                if active {
+                if name == "Asistente" {
+                    if let Some(host) = &mut app.services.host_toolbar {
+                        host.action = Some("assistant");
+                    }
+                } else if name == "Ayuda" {
+                    let _ = app.run("app.about", json!({}));
+                } else if active {
                     app.ui.ribbon_collapsed = !app.ui.ribbon_collapsed;
                 } else {
                     app.ui.tab = name.to_string();

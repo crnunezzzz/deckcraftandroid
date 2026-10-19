@@ -215,3 +215,15 @@ fn cjk_text_in_the_interface_is_drawn_with_real_glyphs() {
         assert!(h.ctx.fonts_mut(|f| f.has_glyphs(&FontId::proportional(13.0), typed)));
     }
 }
+
+#[test]
+fn android_ime_deletes_without_hardware_keys() {
+    let mut h = harness(Session::with_new());
+    let title = h.state().session.active().unwrap().doc.slides[0].shapes[0].id.0;
+    h.state_mut().run("text.edit", json!({"id": title})).unwrap();
+    h.event(Event::Text("café".into()));
+    h.run_steps(2);
+    h.event(Event::Ime(ImeEvent::DeleteSurrounding { before_chars: 1, after_chars: 0 }));
+    h.run_steps(2);
+    assert_eq!(title_text(h.state()), "caf");
+}

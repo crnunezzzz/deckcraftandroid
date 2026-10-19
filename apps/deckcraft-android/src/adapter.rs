@@ -24,6 +24,7 @@ impl Editor {
         let copy_clipboard = platform.clone();
         let picture_clipboard = platform.clone();
         let services = Services {
+            host_toolbar: Some(Default::default()),
             clipboard_html: Some(Box::new(move || html_clipboard.clipboard("html"))),
             clipboard_set_html: Some(Box::new(move |html, text| copy_clipboard.copy_html(html, text).is_ok())),
             clipboard_image: Some(Box::new(move || picture_clipboard.clipboard_image())),
@@ -64,6 +65,16 @@ impl Editor {
     }
     pub fn ui(&mut self, ui: &mut Ui) {
         self.app.ui(ui);
+    }
+    pub fn host_state(&mut self, open: bool, busy: bool, status: &str) {
+        if let Some(host) = &mut self.app.services.host_toolbar {
+            host.assistant_open = open;
+            host.busy = busy;
+            host.status = status.into();
+        }
+    }
+    pub fn host_action(&mut self) -> Option<&'static str> {
+        self.app.services.host_toolbar.as_mut()?.action.take()
     }
     pub fn run(&mut self, id: &str, params: Value) -> Result<Value, String> {
         self.app.run(id, params)

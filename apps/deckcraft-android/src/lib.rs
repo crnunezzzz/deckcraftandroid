@@ -4,6 +4,7 @@
 #[cfg(target_os = "android")]
 mod adapter;
 pub mod assistant;
+pub mod attach;
 #[cfg(target_os = "android")]
 mod audio;
 pub mod input;

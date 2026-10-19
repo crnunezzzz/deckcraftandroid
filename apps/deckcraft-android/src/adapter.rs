@@ -75,6 +75,13 @@ impl Editor {
             host.status = status.into();
         }
     }
+    /// The interface size as a zoom over the system's display scale (1.0: as Android draws it).
+    pub fn interface_scale(&self, _native: f32) -> f32 {
+        self.app.ui.ui_scale
+    }
+    pub fn set_interface_scale(&mut self, _native: f32, scale: f32) {
+        self.app.ui.ui_scale = scale.clamp(0.5, 3.0);
+    }
     pub fn host_action(&mut self) -> Option<&'static str> {
         self.app.services.host_toolbar.as_mut()?.action.take()
     }

@@ -922,11 +922,14 @@ dependencies = [
  "eframe",
  "egui",
  "egui_kittest",
+ "image",
  "jni 0.22.4",
  "log",
+ "quick-xml",
  "serde",
  "serde_json",
  "zeroize",
+ "zip",
 ]
 
 [[package]]

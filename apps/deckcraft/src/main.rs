@@ -13,6 +13,7 @@
 #![deny(clippy::unwrap_used, clippy::expect_used, clippy::panic, clippy::unimplemented, clippy::todo, clippy::unreachable)]
 #![forbid(unsafe_code)]
 
+mod assistant_host;
 mod audio;
 mod control_server;
 #[cfg(all(unix, not(target_os = "macos")))]
@@ -26,19 +27,24 @@ mod pasteboard;
 use deckcraft_engine::Session;
 use deckcraft_ui_egui::{Services, SlideApp};
 
-struct App(SlideApp);
+/// The editor and its AI assistant panel.
+struct App(SlideApp, assistant_host::AssistantHost);
 
 impl eframe::App for App {
     fn logic(&mut self, ctx: &egui::Context, _frame: &mut eframe::Frame) {
+        self.1.frame(ctx, &mut self.0);
         self.0.logic(ctx);
     }
     fn raw_input_hook(&mut self, _ctx: &egui::Context, raw: &mut egui::RawInput) {
         self.0.raw_input_hook(raw);
     }
     fn ui(&mut self, ui: &mut egui::Ui, _frame: &mut eframe::Frame) {
+        self.1.panel(ui, &mut self.0);
         self.0.ui(ui);
+        self.1.finish(ui.ctx(), &mut self.0);
     }
     fn on_exit(&mut self) {
+        self.1.on_exit();
         save_prefs(&self.0);
         // macOS (#279): end the process here, before eframe tears the window down. AccessKit's
         // macOS adapter subclasses the window's content view and restores its class on teardown;
@@ -117,6 +123,8 @@ fn services() -> Services {
         clipboard_html: Some(Box::new(pasteboard::html)),
         clipboard_set_html: Some(Box::new(pasteboard::set_html)),
         // Media is mixed and clocked by the output device; `DECKCRAFT_NO_AUDIO` plays silently.
+        // The ribbon's Asistente tab (`assistant_host`).
+        host_toolbar: Some(Default::default()),
         audio_out: std::env::var_os("DECKCRAFT_NO_AUDIO")
             .is_none()
             .then(|| Box::new(audio::CpalOut::default()) as Box<dyn deckcraft_media::AudioOut>),
@@ -167,6 +175,10 @@ fn app_icon() -> Option<egui::IconData> {
 }
 
 fn main() -> eframe::Result {
+    // Started by Codex or Claude Code as the assistant's tool server: no window, no log file.
+    if deckcraft_assistant::desktop::maybe_serve_mcp() {
+        return Ok(());
+    }
     // First, so every start-up record (and the engine's panic hook, installed with the first
     // Session) is captured; see `logging`.
     let logger = logging::install();
@@ -262,7 +274,7 @@ fn main() -> eframe::Result {
             if show {
                 app.start_show(0, false);
             }
-            Ok(Box::new(App(app)))
+            Ok(Box::new(App(app, assistant_host::AssistantHost::new(config_dir()))))
         }),
     )
 }
@@ -276,7 +288,7 @@ mod tests {
     #[test]
     fn on_exit_ends_the_process_on_macos() {
         if std::env::var_os("DECKCRAFT_TEST_ON_EXIT").is_some() {
-            let mut app = App(SlideApp::new(Session::new(), Services::default()));
+            let mut app = App(SlideApp::new(Session::new(), Services::default()), assistant_host::AssistantHost::new(None));
             println!("calling on_exit");
             eframe::App::on_exit(&mut app);
             println!("on_exit returned");

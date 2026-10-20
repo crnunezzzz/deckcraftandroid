@@ -96,6 +96,7 @@ fn main() {
                 }
                 s.app.ui(ui);
                 s.assistant.launcher(&ctx);
+                s.assistant.update_notice(&ctx, &deckcraft_assistant::BRANDING);
             },
             state,
         );

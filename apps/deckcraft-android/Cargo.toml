@@ -13,6 +13,7 @@ serde = { workspace = true }
 serde_json = { workspace = true }
 egui = { workspace = true }
 zeroize = { version = "1", features = ["derive"] }
+deckcraft-assistant = { workspace = true }
 image = { workspace = true }
 quick-xml = { workspace = true }
 zip = { workspace = true }
@@ -26,8 +27,3 @@ deckcraft-ui-egui = { workspace = true }
 deckcraft-media = { workspace = true }
 cpal = "0.16"
 log = { workspace = true }
-
-[dev-dependencies]
-egui_kittest = { workspace = true, features = ["wgpu", "snapshot"] }
-deckcraft-engine = { workspace = true }
-deckcraft-ui-egui = { workspace = true }

@@ -2,9 +2,9 @@
 //! design can be checked without a tablet: closed (floating button), empty, a conversation,
 //! an error, the settings, attached files, and a narrow phone-sized window.
 //!
-//! `cargo run -p deckcraft-android --example assistant_preview -- /abs/out/dir`
-use deckcraft_android::assistant::{Assistant, Busy, Chip, Entry, Step, View};
-use deckcraft_android::attach;
+//! `cargo run -p deckcraft-assistant --example assistant_preview -- /abs/out/dir`
+use deckcraft_assistant::assistant::{Assistant, Busy, Chip, Entry, Step, View};
+use deckcraft_assistant::attach;
 use deckcraft_engine::Session;
 use deckcraft_ui_egui::{Services, SlideApp};
 
@@ -92,7 +92,7 @@ fn main() {
                 }
                 s.app.logic(&ctx);
                 if s.assistant.open {
-                    s.assistant.panel(ui, &deckcraft_android::BRANDING);
+                    s.assistant.panel(ui, &deckcraft_assistant::BRANDING);
                 }
                 s.app.ui(ui);
                 s.assistant.launcher(&ctx);

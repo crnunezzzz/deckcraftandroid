@@ -16,6 +16,8 @@ pub struct Editor {
 }
 impl Editor {
     pub const NAME: &'static str = "DeckCraft";
+    /// The editor has no momentum of its own: the host coasts after a flick.
+    pub const OWN_MOMENTUM: bool = false;
     pub fn new(dir: &Path, platform: Platform, _ctx: &Context) -> Self {
         let open = platform.clone();
         let save = platform.clone();
@@ -73,6 +75,13 @@ impl Editor {
             host.status = status.into();
         }
     }
+    /// The interface size as a zoom over the system's display scale (1.0: as Android draws it).
+    pub fn interface_scale(&self, _native: f32) -> f32 {
+        self.app.ui.ui_scale
+    }
+    pub fn set_interface_scale(&mut self, _native: f32, scale: f32) {
+        self.app.ui.ui_scale = scale.clamp(0.5, 3.0);
+    }
     pub fn host_action(&mut self) -> Option<&'static str> {
         self.app.services.host_toolbar.as_mut()?.action.take()
     }
@@ -99,9 +108,6 @@ impl Editor {
     }
     pub fn context(&mut self) -> Value {
         self.app.session.execute("document.inspect", &json!({})).unwrap_or_else(|e| json!({"error":e.to_string()}))
-    }
-    pub fn stamp(&self) -> String {
-        self.app.session.active().map(|d| format!("{}:{}:{:?}", d.uid, d.revision, d.selection)).unwrap_or_default()
     }
     pub fn file_event(&mut self, event: &Value) {
         if event["external"] == true
